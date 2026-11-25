@@ -1,0 +1,83 @@
+name: Fork image
+
+# Builds the operator image of this fork and pushes it to the GitHub container
+# registry of the repository owner. The upstream release workflows only run on
+# the upstream repository.
+
+on:
+  push:
+    branches:
+    - arc/v2.16.1-patched
+    tags:
+    - "v*-patched.*"
+
+permissions:
+  contents: read
+
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # Required to push the image to ghcr.io
+    steps:
+    - uses: actions/checkout@v7
+
+    - name: Determine Go version from go.mod
+      run: echo "GO_VERSION=$(go mod edit -json | jq -r .Go)" >> $GITHUB_ENV
+
+    - uses: actions/setup-go@v6
+      with:
+        go-version: ${{ env.GO_VERSION }}
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v4
+
+    - name: Login to GHCR
+      uses: docker/login-action@v4
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build the operator binary
+      # The Dockerfile copies a prebuilt "k8up" binary from the build context.
+      # Same build as the Makefile's k8up target, which isn't addressable by a plain name.
+      run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o k8up ./cmd/k8up
+
+    - name: Determine image tags
+      id: tags
+      run: |
+        owner="$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')"
+        # Image tags can't contain "/" (branch names can).
+        ref_tag="$(echo "${GITHUB_REF_NAME}" | tr '/' '-')"
+        {
+          echo "image=ghcr.io/${owner}/k8up"
+          echo "ref_tag=${ref_tag}"
+          echo "sha_tag=${GITHUB_SHA}"
+        } >> "$GITHUB_OUTPUT"
+
+    - name: Build and push the image
+      run: |
+        docker buildx build . \
+          --platform linux/amd64 \
+          --tag "${{ steps.tags.outputs.image }}:${{ steps.tags.outputs.ref_tag }}" \
+          --tag "${{ steps.tags.outputs.image }}:${{ steps.tags.outputs.sha_tag }}" \
+          --label "org.opencontainers.image.source=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" \
+          --label "org.opencontainers.image.revision=${GITHUB_SHA}" \
+          --push
+
+    - name: Collect the CRDs
+      # The same CRDs as in config/crd and charts/k8up/crds, as one file for convenience.
+      run: |
+        mkdir -p dist
+        cp config/crd/apiextensions.k8s.io/v1/*.yaml dist/
+        for f in config/crd/apiextensions.k8s.io/v1/*.yaml; do
+          cat "$f"
+        done > dist/k8up-crd.yaml
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: k8up-crds-${{ github.sha }}
+        path: dist/*.yaml
+        if-no-files-found: error

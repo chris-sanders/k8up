@@ -12,7 +12,7 @@ on:
 jobs:
   antora:
     runs-on: ubuntu-latest
-    if: ${{ contains(github.ref, 'tags') }}
+    if: ${{ github.repository == 'k8up-io/k8up' && contains(github.ref, 'tags') }}
     steps:
     - uses: actions/checkout@v7
       with:

@@ -10,6 +10,7 @@ jobs:
   # More charts (e.g. forks) may need additional engineering to get the changelog right.
   gh-pages:
     runs-on: ubuntu-latest
+    if: github.repository == 'k8up-io/k8up'
     steps:
       - name: Download cr
         uses: giantswarm/install-binary-action@v4.1.0

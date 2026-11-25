@@ -8,6 +8,7 @@ on:
 jobs:
   dist:
     runs-on: ubuntu-latest
+    if: github.repository == 'k8up-io/k8up'
     steps:
     - uses: actions/checkout@v7
 

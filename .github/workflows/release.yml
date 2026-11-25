@@ -8,6 +8,7 @@ on:
 jobs:
   dist:
     runs-on: ubuntu-latest
+    if: github.repository == 'k8up-io/k8up'
     permissions:
       contents: write # Required to publish a release
       packages: write # Required to push the docker images
