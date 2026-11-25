@@ -113,6 +113,10 @@ func (r *RestoreExecutor) setupArgs(restore *k8upv1.Restore) ([]string, error) {
 		args = append(args, "--delete")
 	}
 
+	if restore.Spec.Verify {
+		args = append(args, "-verifyRestore")
+	}
+
 	if restore.Spec.Snapshot != "" {
 		args = append(args, "-restoreSnap", restore.Spec.Snapshot)
 	}
