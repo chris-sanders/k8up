@@ -487,6 +487,15 @@ spec:
                           type: object
                         type: array
                     type: object
+                  backoffLimit:
+                    description: |-
+                      BackoffLimit specifies the number of times the job's pod is retried before the job is marked as failed.
+                      Every failed attempt is retried with an exponentially increasing delay, so a low value makes a failing action report
+                      its failure sooner.
+                      If unset, the Kubernetes default of 6 applies (for backups, the operator's global backoff limit).
+                    format: int32
+                    minimum: 0
+                    type: integer
                   concurrentRunsAllowed:
                     type: boolean
                   delete:
@@ -2059,6 +2068,15 @@ spec:
                           type: object
                         type: array
                     type: object
+                  backoffLimit:
+                    description: |-
+                      BackoffLimit specifies the number of times the job's pod is retried before the job is marked as failed.
+                      Every failed attempt is retried with an exponentially increasing delay, so a low value makes a failing action report
+                      its failure sooner.
+                      If unset, the Kubernetes default of 6 applies (for backups, the operator's global backoff limit).
+                    format: int32
+                    minimum: 0
+                    type: integer
                   clusterName:
                     description: ClusterName sets the kubernetes cluster name to send
                       to pushgateway for grouping metrics
@@ -3083,6 +3101,15 @@ spec:
                           type: object
                         type: array
                     type: object
+                  backoffLimit:
+                    description: |-
+                      BackoffLimit specifies the number of times the job's pod is retried before the job is marked as failed.
+                      Every failed attempt is retried with an exponentially increasing delay, so a low value makes a failing action report
+                      its failure sooner.
+                      If unset, the Kubernetes default of 6 applies (for backups, the operator's global backoff limit).
+                    format: int32
+                    minimum: 0
+                    type: integer
                   clusterName:
                     description: ClusterName sets the kubernetes cluster name to send
                       to pushgateway for grouping metrics
@@ -4311,6 +4338,15 @@ spec:
                           type: object
                         type: array
                     type: object
+                  backoffLimit:
+                    description: |-
+                      BackoffLimit specifies the number of times the job's pod is retried before the job is marked as failed.
+                      Every failed attempt is retried with an exponentially increasing delay, so a low value makes a failing action report
+                      its failure sooner.
+                      If unset, the Kubernetes default of 6 applies (for backups, the operator's global backoff limit).
+                    format: int32
+                    minimum: 0
+                    type: integer
                   concurrentRunsAllowed:
                     type: boolean
                   failedJobsHistoryLimit:
@@ -5355,6 +5391,15 @@ spec:
                           type: object
                         type: array
                     type: object
+                  backoffLimit:
+                    description: |-
+                      BackoffLimit specifies the number of times the job's pod is retried before the job is marked as failed.
+                      Every failed attempt is retried with an exponentially increasing delay, so a low value makes a failing action report
+                      its failure sooner.
+                      If unset, the Kubernetes default of 6 applies (for backups, the operator's global backoff limit).
+                    format: int32
+                    minimum: 0
+                    type: integer
                   concurrentRunsAllowed:
                     type: boolean
                   delete:

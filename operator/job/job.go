@@ -16,6 +16,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/utils/ptr"
 	controllerruntime "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -55,6 +56,10 @@ func MutateBatchJob(ctx context.Context, batchJob *batchv1.Job, jobObj k8upv1.Jo
 	})
 
 	batchJob.Spec.ActiveDeadlineSeconds = config.Obj.GetActiveDeadlineSeconds()
+	// The backoff limit gets its own copy of the value as well; unset keeps the Kubernetes default.
+	if limit := config.Obj.GetBackoffLimit(); limit != nil {
+		batchJob.Spec.BackoffLimit = ptr.To(*limit)
+	}
 	batchJob.Spec.Template.Labels = labels.Merge(batchJob.Spec.Template.Labels, labels.Set{
 		K8uplabel: "true",
 	})
